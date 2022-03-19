@@ -1,0 +1,11 @@
+# Select NACE/ISCO cells with most female TCN workers
+## nace_occupation.R
+### occtable.RData
+
+# Generate large sample of companies for Orbis
+## sample_selection.R
+### sample.RData
+
+# Generate sample of companies with WEEK and second identity (TCN)
+## sample_companies.R
+### 
