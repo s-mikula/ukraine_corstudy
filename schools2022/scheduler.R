@@ -17,9 +17,9 @@ edate <- fdate + 3
 set.seed(4328)
 
 UKRlow <- schedule %>% 
-  filter(ethnicity == "UKR", literacy == "low") %>% 
+  filter(ethnicity == "UKR", literacy == "low") %>% #pull(name_sender) %>% table()
   group_by(child,letter) %>% 
-  slice_sample(n = 100) %>% 
+  slice_sample(n = 100, replace = FALSE) %>% 
   mutate(
     refugee = rep(c(TRUE,FALSE),50)
   ) %>% 
@@ -28,12 +28,36 @@ UKRlow <- schedule %>%
 other <- schedule %>% 
   filter(ethnicity == "CZE" | (ethnicity == "UKR" & literacy == "high")) %>% 
   group_by(ethnicity,literacy,child,letter) %>% 
-  slice_sample(n = 50) %>% 
+  slice_sample(n = 50, replace = FALSE) %>% 
+  ungroup()
+
+RUS <- schedule %>% 
+  filter(
+    !(ic %in% c(other$ic, UKRlow$ic))
+  ) %>% 
+  slice_sample(n = 400) %>% 
+  mutate(
+    ethnicity = "RUS",
+    literacy = rep(c("high","low"),200),
+    refugee = ifelse(literacy == "low", FALSE, NA)
+  ) %>% 
+  group_by(literacy) %>% 
+  mutate(
+    child = rep(c("male","female"),100)
+  ) %>% 
+  slice_sample(n=200) %>% 
+  mutate(
+    letter = rep(c(1,2),100)
+  ) %>% 
+  slice_sample(n=200) %>% 
+  mutate(
+    name = rep(c(1,2),100)
+  ) %>% 
   ungroup()
 
 
 set.seed(4328)
-schedule <- bind_rows(UKRlow,other) %>% 
+schedule <- bind_rows(UKRlow,other,RUS) %>% 
   #slice_sample(n = 1000) %>% 
   select(-email_sender,-name_sender) %>%
   # Change names/letters
@@ -45,13 +69,13 @@ schedule <- bind_rows(UKRlow,other) %>%
   group_by(ethnicity,child,literacy,refugee,email_sender) %>% 
   add_tally() %>% 
   mutate(
-    email_batch = rep(sample(fdate:edate,4,replace = FALSE),100)[1:first(n)] %>% as_date()
+    email_batch = rep(sample(fdate:edate,4,replace = FALSE),200)[1:first(n)] %>% as_date()
   ) %>% 
   select(-n) %>%
   group_by(email_batch,email_sender) %>% 
   add_tally() %>% 
   mutate(
-    daytime = rep(c("morning","afternoon"),300)[1:first(n)]
+    daytime = rep(c("morning","afternoon"),400)[1:first(n)]
   ) %>% 
   select(-n) %>% 
   ungroup() %>% 
@@ -75,6 +99,6 @@ schedule <- bind_rows(UKRlow,other) %>%
 
 save(schedule, file = "schedule2022.RData")
   
-# schedule %>% 
-#   group_by(ethnicity,literacy,refugee,email_batch) %>% 
+# schedule %>%
+#   group_by(name_sender) %>%
 #   summarise(obs = n()) %>% print(n=300)

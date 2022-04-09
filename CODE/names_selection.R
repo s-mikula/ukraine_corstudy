@@ -1,4 +1,4 @@
-library(dtplyr)
+# library(dtplyr)
 library(tidyverse) 
 
 graw <- read_tsv("DATAlocal/names_bc.tsv")

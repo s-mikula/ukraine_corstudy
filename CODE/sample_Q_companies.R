@@ -76,5 +76,4 @@ upall <- upall %>%
   mutate(
     lprijmeni = str_to_lower(prijmeni)
   ) %>% 
-  left_join(.,prijmeni5p) %>% 
-  filter(is.na(p5p))
+  left_join(.,prijmeni5p)
