@@ -64,7 +64,7 @@ read_csv("DATA/PrijmeniCR_osloveni_20150123/prijmeni_zeny_1.csv", col_names = c(
   distinct(lprijmeni, .keep_all = TRUE)
 
 set.seed(4326)
-upall %>% 
+upall <- upall %>% 
   mutate(
     ISCO = str_sub(ISCO,1,1)
   ) %>% 
