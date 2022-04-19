@@ -322,6 +322,12 @@ current_daytime <- ifelse(hour(Sys.time()) < 12, "morning", "afternoon")
 out <- schedule %>% 
   filter(email_batch == Sys.Date()) %>% 
   filter(daytime == current_daytime) %>% 
+  group_by(email_sender) %>% 
+  mutate(
+    nord = row_number()
+  ) %>% 
+  ungroup() %>% 
+  arrange(nord,psc) %>% 
   select(ic,ethnicity,name_sender,email_sender,child,literacy,letter,gender,refugee,email) %>% 
   pmap(send_mail_possibly) %>% 
   bind_rows()
